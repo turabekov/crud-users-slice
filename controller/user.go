@@ -56,7 +56,19 @@ func GetListUser(req models.GetListRequest) (resp []models.User, err error) {
 
 	// if searched not given or empty
 	if len(req.Search) <= 0 {
-		// users, _ := filteringByDate(Users, req.FromDate, req.ToDate)
+
+		// if dates are given
+		if len(req.FromDate) > 0 && len(req.ToDate) > 0 {
+			users, _ := filteringByDate(Users, req.FromDate, req.ToDate)
+			if req.Limit+req.Offset > len(users) {
+				if req.Offset > len(users) {
+					return []models.User{}, nil
+				}
+				return users[req.Offset:], nil
+			}
+
+			return Users[req.Offset : req.Limit+req.Offset], nil
+		}
 		if req.Limit+req.Offset > len(Users) {
 			if req.Offset > len(Users) {
 				return []models.User{}, nil

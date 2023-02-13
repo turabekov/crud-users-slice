@@ -29,9 +29,9 @@ func main() {
 	// }
 
 	users, err := controller.GetListUser(models.GetListRequest{
-		Offset:   0,
-		Limit:    2,
-		Search:   "a",
+		Offset: 1,
+		Limit:  2,
+		// Search: "xumoyun",
 		FromDate: "2002-06-11",
 		ToDate:   "2010-07-09",
 	})
