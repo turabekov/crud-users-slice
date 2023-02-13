@@ -2,7 +2,7 @@ package controller
 
 import (
 	"app/models"
-	"errors"
+	"fmt"
 	"strings"
 	"time"
 
@@ -53,15 +53,21 @@ func DeleteUser(id int) bool {
 
 // Search and filtiring by Date
 func GetListUser(req models.GetListRequest) (resp []models.User, err error) {
-	if req.Limit+req.Offset > len(Users) {
-		return []models.User{}, errors.New("offset and limit are given incorect")
-	}
+
 	// if searched not given or empty
 	if len(req.Search) <= 0 {
-		users, _ := filteringByDate(Users[req.Offset:req.Limit+req.Offset], req.FromDate, req.ToDate)
+		// users, _ := filteringByDate(Users, req.FromDate, req.ToDate)
+		if req.Limit+req.Offset > len(Users) {
+			if req.Offset > len(Users) {
+				return []models.User{}, nil
+			}
+			return Users[req.Offset:], nil
+		}
 
-		return users, err
+		return Users[req.Offset : req.Limit+req.Offset], nil
+
 	}
+
 	// Search
 	res := []models.User{}
 	for _, v := range Users {
@@ -73,22 +79,30 @@ func GetListUser(req models.GetListRequest) (resp []models.User, err error) {
 
 	// if user not found
 	if len(res) <= 0 {
-		return res, errors.New("user doesn't exist")
+		return res, nil
 	}
-
-	// if offset and limit out of range
-	if req.Limit+req.Offset > len(res) {
-		return res, errors.New("offset and limit are given incorect for searching")
-	}
-
 	// fmt.Println("Result", res[req.Offset:req.Limit+req.Offset])
 
 	// filtering By Date
 	if len(req.FromDate) > 0 && len(req.ToDate) > 0 {
-		users, err := filteringByDate(res[req.Offset:req.Limit+req.Offset], req.FromDate, req.ToDate)
+		users, err := filteringByDate(res, req.FromDate, req.ToDate)
+		fmt.Println("Filtered", users)
+		if req.Limit+req.Offset > len(users) {
+			if req.Offset > len(res) {
+				return []models.User{}, nil
+			}
+			return users[req.Offset:], nil
+		}
 
-		return users, err
+		return users[req.Offset : req.Limit+req.Offset], err
 	} else {
+		// if offset and limit out of range
+		if req.Limit+req.Offset > len(res) {
+			if req.Offset > len(res) {
+				return []models.User{}, nil
+			}
+			return res[req.Offset:], nil
+		}
 		return res[req.Offset : req.Limit+req.Offset], nil
 	}
 }

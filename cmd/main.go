@@ -10,7 +10,7 @@ import (
 func main() {
 
 	// Get User By Page
-	var usersNumber = 10
+	var usersNumber = 11
 	controller.GenerateUser(usersNumber)
 	// overallPages := 0
 	// if usersNumber/10 != 0 {
@@ -30,15 +30,16 @@ func main() {
 
 	users, err := controller.GetListUser(models.GetListRequest{
 		Offset:   0,
-		Limit:    5,
-		Search:   "xumoyun",
+		Limit:    2,
+		Search:   "a",
 		FromDate: "2002-06-11",
 		ToDate:   "2010-07-09",
 	})
 
+	fmt.Println(users)
+
 	if err != nil {
 		fmt.Println(err, users)
-		return
 	}
 
 	for _, user := range users {
